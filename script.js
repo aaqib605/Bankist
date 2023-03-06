@@ -81,9 +81,9 @@ const displayMovements = function (movements) {
 };
 
 // Calculating and updating balance for the user
-const updateBalance = function (movements) {
-  const userBalance = movements.reduce((acc, deposit) => acc + deposit);
-  labelBalance.textContent = `${userBalance} €`;
+const updateBalance = function (account) {
+  account.balance = account.movements.reduce((acc, deposit) => acc + deposit);
+  labelBalance.textContent = `${account.balance} €`;
 };
 
 const updateAccountSummary = function (account) {
@@ -120,27 +120,59 @@ const createUserNames = function (accounts) {
 
 createUserNames(accounts);
 
-// Event handler
+const updateUI = function (account) {
+  displayMovements(account.movements);
+  updateBalance(account);
+  updateAccountSummary(account);
+};
+
+// Event handlers
 let currentAccount;
 btnLogin.addEventListener("click", function (e) {
   e.preventDefault();
+
   currentAccount = accounts.find(
     (account) => account.username === inputLoginUsername.value
   );
+
   if (currentAccount?.pin === Number(inputLoginPin.value)) {
     const accountName = currentAccount.owner.split(" ")[0];
     labelWelcome.textContent = `Welcome back, ${accountName}`;
+
+    // Clear the input fields
+    inputLoginUsername.value = "";
+    inputLoginPin.value = "";
+    inputLoginPin.blur();
+    containerApp.style.opacity = 1;
+
+    updateUI(currentAccount);
+  }
+});
+
+btnTransfer.addEventListener("click", function (e) {
+  e.preventDefault();
+  const transferAmount = Number(inputTransferAmount.value);
+  const recieverAccount = accounts.find(
+    (account) => account.username === inputTransferTo.value
+  );
+
+  // Clearing the input fields
+  inputTransferAmount.value = "";
+  inputTransferTo.value = "";
+  inputTransferAmount.blur();
+
+  // Making sure the transfer is valid
+  if (
+    transferAmount > 0 &&
+    recieverAccount &&
+    currentAccount.balance >= transferAmount &&
+    recieverAccount?.username !== currentAccount.username
+  ) {
+    currentAccount.movements.push(-transferAmount);
+    recieverAccount.movements.push(transferAmount);
   }
 
-  // Clear the input fields
-  inputLoginUsername.value = "";
-  inputLoginPin.value = "";
-  inputLoginPin.blur();
-
-  containerApp.style.opacity = 1;
-  displayMovements(currentAccount.movements);
-  updateBalance(currentAccount.movements);
-  updateAccountSummary(currentAccount);
+  updateUI(currentAccount);
 });
 
 /////////////////////////////////////////////////
