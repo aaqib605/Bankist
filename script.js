@@ -175,6 +175,23 @@ btnTransfer.addEventListener("click", function (e) {
   updateUI(currentAccount);
 });
 
+btnClose.addEventListener("click", function (e) {
+  e.preventDefault();
+
+  if (
+    currentAccount.username === inputCloseUsername.value &&
+    currentAccount.pin === Number(inputClosePin.value)
+  ) {
+    const indexDeleteAccount = accounts.findIndex(
+      (account) => account.username === currentAccount.username
+    );
+    accounts.splice(indexDeleteAccount, 1);
+
+    containerApp.style.opacity = 0;
+    labelWelcome.textContent = "Log in to get started";
+  }
+});
+
 /////////////////////////////////////////////////
 /////////////////////////////////////////////////
 // LECTURES
@@ -291,7 +308,6 @@ const calcAvgHumanAgeNew = function (dogAges) {
 // calcAvgHumanAgeNew([5, 2, 4, 1, 15, 8, 3]);
 
 // find method
-
 const findResult = [1, 2, 3, 4, 5].find((num) => num % 2 === 0);
 // console.log(findResult);
 
