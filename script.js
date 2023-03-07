@@ -61,8 +61,14 @@ const inputLoanAmount = document.querySelector(".form__input--loan-amount");
 const inputCloseUsername = document.querySelector(".form__input--user");
 const inputClosePin = document.querySelector(".form__input--pin");
 
-const displayMovements = function (movements) {
+const displayMovements = function (movements, sort = false) {
   containerMovements.innerHTML = "";
+
+  if (sort) {
+    movements = movements.sort((a, b) => a - b);
+  } else {
+    movements = movements.sort((a, b) => b - a);
+  }
 
   movements.forEach((movement, index) => {
     const movementType = movement > 0 ? "deposit" : "withdrawal";
@@ -209,6 +215,13 @@ btnClose.addEventListener("click", function (e) {
   }
 });
 
+let isSorted = false;
+btnSort.addEventListener("click", function (e) {
+  e.preventDefault();
+  displayMovements(currentAccount.movements, !isSorted);
+  isSorted = !isSorted;
+});
+
 /////////////////////////////////////////////////
 /////////////////////////////////////////////////
 // LECTURES
@@ -342,3 +355,27 @@ const isPresent = fruits.some((fruit) => fruit === "mango");
 const checkOdd = [1, 3, 5, 7, 9];
 const result = checkOdd.every((number) => number % 2 !== 0);
 // console.log(result);
+
+// flat method
+const nestedArr = [[1, 2, 3], [4, 5, 6], 7, 8];
+// console.log(nestedArr.flat());
+
+const nestedArrDeep = [[[1, 2], 3], [[4, 5], 6], 7, 8];
+// console.log(nestedArrDeep.flat(2));
+
+const netBalance = accounts
+  .map((account) => account.movements)
+  .flat()
+  .reduce((acc, movement) => acc + movement);
+// console.log(netBalance);
+
+// flatMap method
+const netBalance2 = accounts
+  .flatMap((account) => account.movements)
+  .reduce((acc, movement) => acc + movement);
+// console.log(netBalance2);
+
+// sort method
+// console.log(movements);
+// movements.sort((a, b) => a - b);
+// console.log(movements);
