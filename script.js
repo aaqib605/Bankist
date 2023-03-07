@@ -175,6 +175,23 @@ btnTransfer.addEventListener("click", function (e) {
   updateUI(currentAccount);
 });
 
+btnLoan.addEventListener("click", function (e) {
+  e.preventDefault();
+  const loanAmount = Number(inputLoanAmount.value);
+  const isValidRequest = currentAccount.movements.some(
+    (movement) => movement >= loanAmount * 0.1
+  );
+
+  if (loanAmount > 0 && isValidRequest) {
+    currentAccount.movements.push(loanAmount);
+    updateUI(currentAccount);
+
+    // Clear the input fields
+    inputLoanAmount.value = "";
+    inputLoanAmount.blur();
+  }
+});
+
 btnClose.addEventListener("click", function (e) {
   e.preventDefault();
 
@@ -315,3 +332,13 @@ const accountObj = accounts.find(
   (account) => account.owner === "Jessica Davis"
 );
 // console.log(accountObj);
+
+// some method
+const fruits = ["apple", "banana", "mango", "guava"];
+const isPresent = fruits.some((fruit) => fruit === "mango");
+// console.log(isPresent);
+
+// every method
+const checkOdd = [1, 3, 5, 7, 9];
+const result = checkOdd.every((number) => number % 2 !== 0);
+// console.log(result);
