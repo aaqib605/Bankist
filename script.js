@@ -91,13 +91,23 @@ const displayMovements = function (account, sort = false) {
 
     const dateStr = `${new Intl.DateTimeFormat(locale).format(date)}`;
 
+    // Currency formatting
+    const options = {
+      style: "currency",
+      currency: "USD",
+    };
+
+    const currencyFormat = new Intl.NumberFormat(locale, options).format(
+      movement
+    );
+
     const movementsHTML = `
       <div class="movements__row">
         <div class="movements__type movements__type--${movementType}">${
       index + 1
     } ${movementType}</div>
         <div class="movements__date">${dateStr}</div>
-        <div class="movements__value">${movement.toFixed(2)}€</div>
+        <div class="movements__value">${currencyFormat}</div>
       </div>
     `;
 
@@ -108,7 +118,17 @@ const displayMovements = function (account, sort = false) {
 // Calculating and updating balance for the user
 const updateBalance = function (account) {
   account.balance = account.movements.reduce((acc, deposit) => acc + deposit);
-  labelBalance.textContent = `${account.balance.toFixed(2)} €`;
+
+  const locale = navigator.language;
+  const options = {
+    style: "currency",
+    currency: "USD",
+  };
+
+  const balanceFormat = new Intl.NumberFormat(locale, options).format(
+    account.balance
+  );
+  labelBalance.textContent = `${balanceFormat}`;
 };
 
 const updateAccountSummary = function (account) {
@@ -116,12 +136,22 @@ const updateAccountSummary = function (account) {
     .filter((movement) => movement > 0)
     .reduce((acc, deposit) => acc + deposit, 0);
 
-  labelSumIn.textContent = `${totalDeposits.toFixed(2)}€`;
+  const locale = navigator.language;
+  const options = {
+    style: "currency",
+    currency: "USD",
+  };
+
+  labelSumIn.textContent = `${new Intl.NumberFormat(locale, options).format(
+    totalDeposits
+  )}`;
 
   const totalWidthdrawals = account.movements
     .filter((movement) => movement < 0)
     .reduce((acc, widthdrawal) => acc + widthdrawal, 0);
-  labelSumOut.textContent = `${Math.abs(totalWidthdrawals.toFixed(2))}€`;
+  labelSumOut.textContent = `${new Intl.NumberFormat(locale, options).format(
+    totalWidthdrawals
+  )}`;
 
   const interest = account.movements
     .filter((movement) => movement > 0)
@@ -129,7 +159,10 @@ const updateAccountSummary = function (account) {
     .filter((interest) => interest >= 1)
     .reduce((acc, deposit) => acc + deposit, 0);
 
-  labelSumInterest.textContent = `${interest.toFixed(2)}€`;
+  labelSumInterest.textContent = `${new Intl.NumberFormat(
+    locale,
+    options
+  ).format(interest)}`;
 };
 
 // Creating usernames based on accounts owner property
