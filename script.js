@@ -21,8 +21,8 @@ const account1 = {
     "2020-07-02T23:36:17.929Z",
     "2020-07-01T10:51:36.790Z",
   ],
-  currency: "EUR",
-  locale: "pt-PT", // de-DE
+  currency: "USD",
+  locale: "en-US", // de-DE
 };
 
 const account2 = {
@@ -87,10 +87,9 @@ const displayMovements = function (account, sort = false) {
     const movementType = movement > 0 ? "deposit" : "withdrawal";
 
     const date = new Date(account.movementsDates[index]);
-    const day = `${date.getDay()}`.padStart(2, 0);
-    const month = `${date.getMonth() + 1}`.padStart(2, 0);
-    const year = date.getFullYear();
-    const dateStr = `${day}/${month}/${year}`;
+    const locale = navigator.language;
+
+    const dateStr = `${new Intl.DateTimeFormat(locale).format(date)}`;
 
     const movementsHTML = `
       <div class="movements__row">
@@ -175,12 +174,17 @@ btnLogin.addEventListener("click", function (e) {
   }
   // Creating the current date
   const date = new Date();
-  const day = String(date.getDay()).padStart(2, 0);
-  const year = date.getFullYear();
-  const month = String(date.getMonth() + 1).padStart(2, 0);
-  const hour = String(date.getHours()).padStart(2, 0);
-  const minute = String(date.getMinutes()).padStart(2, 0);
-  labelDate.textContent = `${day}/${month}/${year}, ${hour}:${minute}`;
+  const options = {
+    hour: "numeric",
+    minute: "numeric",
+    day: "numeric",
+    month: "long",
+    year: "numeric",
+    weekday: "long",
+  };
+
+  const locale = currentAccount.locale;
+  labelDate.textContent = new Intl.DateTimeFormat(locale, options).format(date);
 });
 
 btnTransfer.addEventListener("click", function (e) {
