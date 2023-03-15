@@ -184,10 +184,38 @@ const updateUI = function (account) {
   updateAccountSummary(account);
 };
 
+const startLogOutTimer = function () {
+  let time = 300;
+
+  const tick = function () {
+    const min = String(Math.floor(time / 60)).padStart(2, 0);
+    const sec = String(Math.floor(time % 60)).padStart(2, 0);
+    labelTimer.textContent = `${min}:${sec}`;
+
+    // When timer expires
+    if (time === 0) {
+      clearInterval(timer);
+      labelWelcome.textContent = "Log in to get started";
+      containerApp.style.opacity = 0;
+    }
+
+    time--;
+  };
+
+  tick();
+  const timer = setInterval(tick, 1000);
+
+  return timer;
+};
+
 // Event handlers
-let currentAccount;
+let currentAccount, timer;
+
 btnLogin.addEventListener("click", function (e) {
   e.preventDefault();
+
+  if (timer) clearInterval(timer);
+  timer = startLogOutTimer();
 
   currentAccount = accounts.find(
     (account) => account.username === inputLoginUsername.value
@@ -248,6 +276,10 @@ btnTransfer.addEventListener("click", function (e) {
   }
 
   updateUI(currentAccount);
+
+  // Reset the timer
+  clearInterval(timer);
+  timer = startLogOutTimer();
 });
 
 btnLoan.addEventListener("click", function (e) {
@@ -259,17 +291,23 @@ btnLoan.addEventListener("click", function (e) {
   );
 
   if (loanAmount > 0 && isValidRequest) {
-    currentAccount.movements.push(loanAmount);
+    setTimeout(() => {
+      currentAccount.movements.push(loanAmount);
 
-    // Adding the loan date
-    currentAccount.movementsDates.push(new Date().toISOString());
+      // Adding the loan date
+      currentAccount.movementsDates.push(new Date().toISOString());
 
-    updateUI(currentAccount);
-
-    // Clear the input fields
-    inputLoanAmount.value = "";
-    inputLoanAmount.blur();
+      updateUI(currentAccount);
+    }, 3000);
   }
+
+  // Clear the input fields
+  inputLoanAmount.value = "";
+  inputLoanAmount.blur();
+
+  // Reset the timer
+  clearInterval(timer);
+  timer = startLogOutTimer();
 });
 
 btnClose.addEventListener("click", function (e) {
@@ -295,7 +333,3 @@ btnSort.addEventListener("click", function (e) {
   displayMovements(currentAccount, !isSorted);
   isSorted = !isSorted;
 });
-
-/////////////////////////////////////////////////
-/////////////////////////////////////////////////
-// LECTURES
